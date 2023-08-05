@@ -1,4 +1,4 @@
-﻿;with online_retail AS
+﻿;WITH online_retail AS
 (
 	SELECT [InvoiceNo]
 		  ,[StockCode]
@@ -54,17 +54,17 @@ GROUP BY CustomerID
 
 SELECT * FROM #cohort
 
-select
+SELECT
 	mmm.*,
 	cohort_index = year_diff * 12 + month_diff + 1
-into #cohort_retention
-from
+INTO #cohort_retention
+FROM
 	(
-	select
+	SELECT
 		mm.*,
 		Year_diff = Invoice_Year - Cohort_Year,
 		Month_diff = Invoice_Month - Cohort_Month
-	from
+	FROM
 		(
 			SELECT 
 				m.*,
@@ -75,39 +75,39 @@ from
 				MONTH(c.Cohort_Date) Cohort_Month
 			FROM #online_retail_main m
 			LEFT JOIN #cohort c
-				on m.CustomerID = c.CustomerID
+				ON m.CustomerID = c.CustomerID
 			) mm
 	)mmm
 --where CustomerID = 14733
 
 SELECT * FROM #cohort_retention
 
-select distinct 
+SELECT DISTINCT 
 		CustomerID,
 		Cohort_Date,
 		cohort_index
-	from #cohort_retention
-order by 1, 3
+	FROM #cohort_retention
+ORDER BY 1, 3
 --where CustomerID = 14733
 
 
 ---Pivot Data to see the cohort table
 
 
-select 	*
-into #cohort_pivot
-from(
-	select 
-	distinct 
+SELECT 	*
+INTO #cohort_pivot
+FROM(
+	SELECT 
+	DISTINCT 
 		CustomerID,
 		Cohort_Date,
 		cohort_index
-	from #cohort_retention
+	FROM #cohort_retention
 
 )tbl
-pivot(
-	Count(CustomerID)
-	for Cohort_Index In 
+PIVOT(
+	COUNT(CustomerID)
+	FOR Cohort_Index IN 
 		(
 		[1], 
         [2], 
@@ -123,33 +123,29 @@ pivot(
         [12],
 		[13])
 
-)as pivot_table
+)AS pivot_table
 
-select *
-from #cohort_pivot
-order by Cohort_Date
+SELECT *
+FROM #cohort_pivot
+ORDER BY Cohort_Date
 
-select Cohort_Date ,
-	(1.0 * [1]/[1] * 100) as [1], 
-    1.0 * [2]/[1] * 100 as [2], 
-    1.0 * [3]/[1] * 100 as [3],  
-    1.0 * [4]/[1] * 100 as [4],  
-    1.0 * [5]/[1] * 100 as [5], 
-    1.0 * [6]/[1] * 100 as [6], 
-    1.0 * [7]/[1] * 100 as [7], 
-	1.0 * [8]/[1] * 100 as [8], 
-    1.0 * [9]/[1] * 100 as [9], 
-    1.0 * [10]/[1] * 100 as [10],   
-    1.0 * [11]/[1] * 100 as [11],  
-    1.0 * [12]/[1] * 100 as [12],  
-	1.0 * [13]/[1] * 100 as [13]
-from #cohort_pivot
-order by Cohort_Date
+SELECT Cohort_Date ,
+	(1.0 * [1]/[1] * 100) AS [1], 
+    1.0 * [2]/[1] * 100 AS [2], 
+    1.0 * [3]/[1] * 100 AS [3],  
+    1.0 * [4]/[1] * 100 AS [4],  
+    1.0 * [5]/[1] * 100 AS [5], 
+    1.0 * [6]/[1] * 100 AS [6], 
+    1.0 * [7]/[1] * 100 AS [7], 
+	1.0 * [8]/[1] * 100 AS [8], 
+    1.0 * [9]/[1] * 100 AS [9], 
+    1.0 * [10]/[1] * 100 AS [10],   
+    1.0 * [11]/[1] * 100 AS [11],  
+    1.0 * [12]/[1] * 100 AS [12],  
+	1.0 * [13]/[1] * 100 AS [13]
+FROM #cohort_pivot
+ORDER BY Cohort_Date
 
---Trong truy vấn SQL của bạn, 
---việc nhân 1.0 với các số trong phép tính (1.0 * [1] / [1] * 100)
---là một cách để đảm bảo rằng kết quả của phép chia 
---là một số thực (float) chứ không phải là số nguyên (integer).
 
 DECLARE 
     @columns NVARCHAR(MAX) = '',
@@ -158,7 +154,7 @@ DECLARE
 SELECT 
     @columns += QUOTENAME(cohort_index) + ','
 FROM 
-    (select distinct cohort_index from #cohort_retention) m
+    (SELECT DISTINCT cohort_index FROM #cohort_retention) m
 ORDER BY 
     cohort_index;
 
@@ -174,17 +170,17 @@ SET @sql ='
 SELECT * 
 FROM   
 (
-	  select distinct
+	  SELECT DISTINCT
 		Cohort_Date,
 		cohort_index,
 		CustomerID 
-	  from #cohort_retention
+	  FROM #cohort_retention
 ) t 
 PIVOT(
     COUNT(CustomerID) 
     FOR cohort_index IN ('+ @columns +')
 ) AS pivot_table
-order by Cohort_Date
+ORDER BY Cohort_Date
 
 
 ';
