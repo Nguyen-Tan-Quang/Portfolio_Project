@@ -6,7 +6,7 @@ Skills used: Joins, CTE's, Temp Tables, Windows Functions, Aggregate Functions, 
 */
 
 Select *
-From PortfolioProject..CovidDeaths
+From [PortfolioProject].[dbo].[CovidDeaths]
 Where continent is not null 
 order by 3,4
 
@@ -14,7 +14,7 @@ order by 3,4
 -- Select Data that we are going to be starting with
 
 Select Location, date, total_cases, new_cases, total_deaths, population_density
-From PortfolioProject..CovidDeaths
+From [PortfolioProject].[dbo].[CovidDeaths]
 Where continent is not null 
 order by 1,2
 
@@ -24,7 +24,7 @@ order by 1,2
 
 Select  Location, date, total_cases,total_deaths, 
 		(cast(Total_deaths as int)/cast(total_cases as int))*100 as DeathPercentage
-From PortfolioProject..CovidDeaths
+From [PortfolioProject].[dbo].[CovidDeaths]
 Where location like '%states%'
 and continent is not null 
 order by 1,2
@@ -35,7 +35,7 @@ order by 1,2
 
 Select Location, date, population_density, total_cases,  
 		(cast(total_cases as int)/population_density)*100 as PercentPopulationInfected
-From PortfolioProject..CovidDeaths
+From [PortfolioProject].[dbo].[CovidDeaths]
 --Where location like '%states%'
 order by 1,2
 
@@ -45,7 +45,7 @@ order by 1,2
 Select Location, population_density, 
 		MAX(cast(total_cases as int)) as HighestInfectionCount,  
 		Max((cast(total_cases as int)/population_density))*100 as PercentPopulationInfected
-From PortfolioProject..CovidDeaths
+From [PortfolioProject].[dbo].[CovidDeaths]
 --Where location like '%states%'
 Group by Location, population_density
 order by PercentPopulationInfected desc
@@ -54,7 +54,7 @@ order by PercentPopulationInfected desc
 -- Countries with Highest Death Count per Population
 
 Select Location, MAX(cast(Total_deaths as int)) as TotalDeathCount
-From PortfolioProject..CovidDeaths
+From [PortfolioProject].[dbo].[CovidDeaths]
 --Where location like '%states%'
 Where continent is not null 
 Group by Location
@@ -67,7 +67,7 @@ order by TotalDeathCount desc
 -- Showing contintents with the highest death count per population
 
 Select continent, MAX(cast(Total_deaths as int)) as TotalDeathCount
-From PortfolioProject..CovidDeaths
+From [PortfolioProject].[dbo].[CovidDeaths]
 --Where location like '%states%'
 Where continent is not null 
 Group by continent
@@ -78,7 +78,7 @@ order by TotalDeathCount desc
 -- GLOBAL NUMBERS
 
 Select SUM(new_cases) as total_cases, SUM(cast(new_deaths as int)) as total_deaths, SUM(cast(new_deaths as int))/SUM(New_Cases)*100 as DeathPercentage
-From PortfolioProject..CovidDeaths
+From [PortfolioProject].[dbo].[CovidDeaths]
 --Where location like '%states%'
 where continent is not null 
 --Group By date
@@ -92,8 +92,8 @@ order by 1,2
 Select dea.continent, dea.location, dea.date, dea.population_density, vac.new_vaccinations
 , SUM(CONVERT(bigint,vac.new_vaccinations)) OVER (Partition by dea.Location Order by dea.location, dea.Date) as RollingPeopleVaccinated
 --, (RollingPeopleVaccinated/population_density)*100
-From PortfolioProject..CovidDeaths dea
-Join PortfolioProject..CovidVaccinations vac
+From [PortfolioProject].[dbo].[CovidDeaths] dea
+Join [PortfolioProject].[dbo].[CovidVaccinations] vac
 	On dea.location = vac.location
 	and dea.date = vac.date
 where dea.continent is not null 
@@ -108,8 +108,8 @@ as
 Select dea.continent, dea.location, dea.date, dea.population_density, vac.new_vaccinations
 , SUM(CONVERT(bigint,vac.new_vaccinations)) OVER (Partition by dea.Location Order by dea.location, dea.Date) as RollingPeopleVaccinated
 --, (RollingPeopleVaccinated/population_density)*100
-From PortfolioProject..CovidDeaths dea
-Join PortfolioProject..CovidVaccinations vac
+From [PortfolioProject].[dbo].[CovidDeaths] dea
+Join [PortfolioProject].[dbo].[CovidVaccinations] vac
 	On dea.location = vac.location
 	and dea.date = vac.date
 where dea.continent is not null 
@@ -137,8 +137,8 @@ Insert into #PercentPopulationVaccinated
 Select dea.continent, dea.location, dea.date, dea.population_density, vac.new_vaccinations
 , SUM(CONVERT(bigint,vac.new_vaccinations)) OVER (Partition by dea.Location Order by dea.location, dea.Date) as RollingPeopleVaccinated
 --, (RollingPeopleVaccinated/population_density)*100
-From PortfolioProject..CovidDeaths dea
-Join PortfolioProject..CovidVaccinations vac
+From [PortfolioProject].[dbo].[CovidDeaths] dea
+Join [PortfolioProject].[dbo].[CovidVaccinations] vac
 	On dea.location = vac.location
 	and dea.date = vac.date
 --where dea.continent is not null 
@@ -156,8 +156,8 @@ Create View PercentPopulationVaccinated as
 Select dea.continent, dea.location, dea.date, dea.population_density, vac.new_vaccinations
 , SUM(CONVERT(bigint,vac.new_vaccinations)) OVER (Partition by dea.Location Order by dea.location, dea.Date) as RollingPeopleVaccinated
 --, (RollingPeopleVaccinated/population_density)*100
-From PortfolioProject..CovidDeaths dea
-Join PortfolioProject..CovidVaccinations vac
+From [PortfolioProject].[dbo].[CovidDeaths] dea
+Join [PortfolioProject].[dbo].[CovidVaccinations] vac
 	On dea.location = vac.location
 	and dea.date = vac.date
 where dea.continent is not null 
