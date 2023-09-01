@@ -1,6 +1,6 @@
 # SQL Tableau EDA Project
 
-This repository contains SQL scripts for performing exploratory data analysis (EDA) on the COVID-19 dataset using Tableau visualizations.
+This repository contains SQL scripts for performing exploratory data analysis (EDA) on the COVID-19 dataset and uses Tableau for visualizations.
 
 ## Tableau Dashboard
 
